@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SaintGilles 15_40</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    /* Sfondo generale dell'app (simula lo schermo del telefono in secondo piano) */
+    body {
+      background-color: #1a1a1a;
+      background-image: radial-gradient(circle, #2a2a2a, #000000);
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Terminal', 'Fixedsys', 'Consolas', 'Courier New', monospace;
+      overflow: hidden;
+    }
+
+    /* Sfondo scuro semi-trasparente dietro il popup */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* La finestra Popup */
+    #popup-window {
+      background-color: black;
+      border: 2px solid #33FF33;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(51, 255, 51, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Barra del titolo in alto con la X */
+    #title-bar {
+      background-color: #33FF33;
+      color: black;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 15px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    /* Pulsante di chiusura (X) */
+    #close-btn {
+      background: black;
+      color: #33FF33;
+      border: 1px solid black;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 16px;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    #close-btn:active {
+      background: #22aa22;
+      color: black;
+    }
+
+    /* Area del terminale interno */
+    #terminal-content {
+      padding: 20px;
+      color: #33FF33;
+      font-size: 22px;
+      font-weight: bold;
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    #prompt {
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="overlay">
+    <div id="popup-window">
+      <!-- Barra del titolo con la X -->
+      <div id="title-bar">
+        <span>👁️‍🗨️ Terminale</span>
+        <button id="close-btn">X</button>
+      </div>
+      
+      <!-- Contenuto in stile MS-DOS -->
+      <div id="terminal-content">
+        <div id="message">&gt;SaintGilles15_40</div>
+        <div id="prompt">&gt;</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 1. Chiedi il testo in input all'avvio
+    setTimeout(() => {
+      let userInput = prompt("Inserisci il testo da far lampeggiare (lascia vuoto per il classico '_'):", "");
+      let displayStr = userInput ? userInput : "_";
+      
+      let promptEl = document.getElementById("prompt");
+      let cursorVisible = true;
+
+      // 2. Logica di lampeggio
+      setInterval(() => {
+        cursorVisible = !cursorVisible;
+        promptEl.textContent = ">" + (cursorVisible ? displayStr : "");
+      }, 550);
+    }, 300);
+
+    // 3. Gestione della chiusura (Tasto X)
+    document.getElementById("close-btn").addEventListener("click", () => {
+      // Nasconde visivamente il popup
+      document.getElementById("overlay").style.display = "none";
+      
+      // Tenta di chiudere la PWA (su iOS/Android i browser bloccano spesso window.close(), 
+      // quindi nascondere il div overlay come fatto sopra garantisce che l'effetto "chiuso" funzioni sempre).
+      try {
+        window.close();
+      } catch (e) {}
+    });
+
+    // 4. Registrazione del Service Worker per l'installazione PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js');
+      });
+    }
+  </script>
+</body>
+</html>
