@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SaintGilles 15_40</title>
+  <link rel="manifest" href="manifest.json">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      background-color: #1a1a1a;
+      background-image: radial-gradient(circle, #2a2a2a, #000000);
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'VT323', monospace;
+      overflow: hidden;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #popup-window {
+      background-color: black;
+      border: 2px solid #33FF33;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(51, 255, 51, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #title-bar {
+      background-color: #33FF33;
+      color: black;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 15px;
+      font-size: 20px;
+      font-weight: normal;
+    }
+
+    #close-btn {
+      background: black;
+      color: #33FF33;
+      border: 1px solid black;
+      border-radius: 4px;
+      font-family: 'VT323', monospace;
+      font-size: 18px;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    #close-btn:active {
+      background: #22aa22;
+      color: black;
+    }
+
+    /* Reso cliccabile per riaprire il prompt */
+    #terminal-content {
+      padding: 20px;
+      color: #33FF33;
+      font-size: 26px;
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      line-height: 1.2;
+      cursor: text;
+    }
+
+    #prompt {
+      word-wrap: break-word;
+    }
+
+    /* Testo di aiuto nascosto che appare debolmente sul fondo */
+    .hint {
+      font-size: 16px;
+      color: #1a551a;
+      margin-top: auto;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="overlay">
+    <div id="popup-window">
+      <div id="title-bar">
+        <span>👁️‍🗨️ Terminale</span>
+        <button id="close-btn">X</button>
+      </div>
+      
+      <!-- L'area del terminale reagirà al tocco -->
+      <div id="terminal-content">
+        <div id="message">&gt;SaintGilles15_40</div>
+        <div id="prompt">&gt;</div>
+        <div class="hint"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let displayStr = "_";
+    let promptEl = document.getElementById("prompt");
+    let cursorVisible = true;
+
+    // Funzione che gestisce l'inserimento del testo
+    function askText() {
+      // Se c'è già un testo personalizzato, lo propone precompilato nel popup
+      let defaultValue = (displayStr === "_") ? "" : displayStr;
+      let userInput = prompt("Inserisci il testo da far lampeggiare (lascia vuoto per il classico '_'):", defaultValue);
+      
+      // Aggiorna solo se l'utente non ha premuto "Annulla"
+      if (userInput !== null) {
+        displayStr = userInput.trim() !== "" ? userInput : "_";
+      }
+    }
+
+    // Chiede il testo all'avvio
+    setTimeout(askText, 300);
+
+    // Permette di richiamare la funzione toccando il terminale
+    document.getElementById("terminal-content").addEventListener("click", askText);
+
+    // Animazione del cursore lampeggiante
+    setInterval(() => {
+      cursorVisible = !cursorVisible;
+      promptEl.textContent = ">" + (cursorVisible ? displayStr : "");
+    }, 550);
+
+    // Funzione di chiusura
+    document.getElementById("close-btn").addEventListener("click", () => {
+      document.getElementById("overlay").style.display = "none";
+      try {
+        window.close();
+      } catch (e) {}
+    });
+
+    // Registrazione Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js');
+      });
+    }
+  </script>
+</body>
+</html>
