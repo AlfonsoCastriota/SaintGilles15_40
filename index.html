@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SaintGilles 15_40</title>
+  <link rel="manifest" href="manifest.json">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      background-color: #1a1a1a;
+      background-image: radial-gradient(circle, #2a2a2a, #000000);
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'VT323', monospace;
+      overflow: hidden;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #popup-window {
+      background-color: black;
+      border: 2px solid #33FF33;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 15px rgba(51, 255, 51, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #title-bar {
+      background-color: #33FF33;
+      color: black;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 15px;
+      font-size: 20px;
+      font-weight: normal;
+    }
+
+    #close-btn {
+      background: black;
+      color: #33FF33;
+      border: 1px solid black;
+      border-radius: 4px;
+      font-family: 'VT323', monospace;
+      font-size: 18px;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    #close-btn:active {
+      background: #22aa22;
+      color: black;
+    }
+
+    #terminal-content {
+      padding: 20px;
+      color: #33FF33;
+      font-size: 26px;
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      line-height: 1.2;
+      cursor: text; 
+    }
+
+    /* ID modificato per non entrare in conflitto con window.prompt() */
+    #prompt-line {
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="overlay">
+    <div id="popup-window">
+      <div id="title-bar">
+        <span>👁️‍🗨️ Terminale</span>
+        <button id="close-btn">X</button>
+      </div>
+      
+      <div id="terminal-content">
+        <div id="message">&gt;SaintGilles15_40</div>
+        <div id="prompt-line">&gt;</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let displayStr = "_";
+    let promptEl = document.getElementById("prompt-line");
+    let cursorVisible = true;
+
+    function askText() {
+      let defaultValue = (displayStr === "_") ? "" : displayStr;
+      
+      // Richiamo esplicito alla funzione nativa per evitare blocchi
+      let userInput = window.prompt("Inserisci il testo da far lampeggiare (lascia vuoto per il classico '_'):", defaultValue);
+      
+      if (userInput !== null) {
+        displayStr = userInput.trim() !== "" ? userInput : "_";
+      }
+    }
+
+    // Chiede il testo all'avvio
+    setTimeout(askText, 300);
+
+    // Riapre il prompt toccando ovunque nell'area del terminale
+    document.getElementById("terminal-content").addEventListener("click", askText);
+
+    // Cursore lampeggiante
+    setInterval(() => {
+      cursorVisible = !cursorVisible;
